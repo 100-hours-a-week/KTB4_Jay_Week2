@@ -26,7 +26,7 @@ public class UserView {
             int choice = sc.nextInt();
             sc.nextLine();
 
-            // 회원가입
+            // 회원가입 시 유저 컨트롤러의 register 함수를 실행시킨다.
             if (choice == 1) {
                 userController.register();
             }
@@ -36,7 +36,7 @@ public class UserView {
                 if (user != null){
 
                     System.out.println("로그인 성공!!");
-
+                    // 로그인 성공 시에만 다음 주문 orderView의 start 실행
                     orderView.start(user);
                 }
             }
