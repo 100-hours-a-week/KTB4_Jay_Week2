@@ -9,6 +9,7 @@ import org.example.domain.user.User;
 import org.example.repository.ItemRepository;
 import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
+import org.example.task.DeliveryTask;
 
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class OrderService {
     // 주문
     public String order(User user,
                         String itemId) {
-
+        System.out.println("주문 thread: " + Thread.currentThread().getName());
         Item item = findItem(itemId);
 
         // 상품 없으면 실패
@@ -86,8 +87,12 @@ public class OrderService {
         // 주문 저장
         orderRepository.save(order);
 
-        return "주문 완료 / 결제 금액 : "
-                + finalPrice;
+        Runnable task = new DeliveryTask(order);
+        Thread thread = new Thread(task);
+        thread.start();
+        return "주문 완료 / 결제 금액 : " + finalPrice + " 남은 금액: " + user.getBalance();
+
+
     }
 
     // 상품 찾기

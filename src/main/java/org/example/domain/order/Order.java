@@ -15,6 +15,7 @@ public class Order {
     private int price;
     private int discountPrice;
     private int finalPrice;
+    private OrderStatus status;
 
     public Order(User user,
                  Item item,
@@ -23,8 +24,7 @@ public class Order {
                  int finalPrice) {
 
         // 랜덤 주문번호 생성
-        this.orderId =
-                UUID.randomUUID().toString();
+        this.orderId = UUID.randomUUID().toString();
 
         this.userId = user.getId();
         this.itemId = item.getId();
@@ -32,6 +32,15 @@ public class Order {
         this.price = price;
         this.discountPrice = discountPrice;
         this.finalPrice = finalPrice;
+        this.status = OrderStatus.ORDERED;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status){
+        this.status = status;
     }
 
     public String toCsv() {
