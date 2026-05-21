@@ -1,9 +1,12 @@
 package org.example.controller;
 
 import org.example.domain.item.Item;
+import org.example.domain.order.Order;
 import org.example.domain.user.User;
 import org.example.service.ItemService;
 import org.example.service.OrderService;
+
+import java.util.List;
 
 public class OrderController {
 
@@ -41,5 +44,13 @@ public class OrderController {
                         String itemId) {
 
         return orderService.order(user, itemId);
+    }
+
+    public List<Order> getorders() {
+        return orderService.getorders();
+    }
+
+    public void testStockRace(){
+        orderService.testStockRace();
     }
 }

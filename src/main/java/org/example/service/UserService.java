@@ -59,4 +59,9 @@ public class UserService {
 
         return null;
     }
+    public void charge(User user, int amount){
+        user.chargeBalance(amount);
+
+        userRepository.save(user);
+    }
 }

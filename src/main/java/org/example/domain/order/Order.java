@@ -16,6 +16,7 @@ public class Order {
     private int discountPrice;
     private int finalPrice;
     private OrderStatus status;
+    private String itemName;
 
     public Order(User user,
                  Item item,
@@ -33,12 +34,22 @@ public class Order {
         this.discountPrice = discountPrice;
         this.finalPrice = finalPrice;
         this.status = OrderStatus.ORDERED;
+        this.itemName = item.getName();
     }
 
     public OrderStatus getStatus() {
         return status;
     }
+    public String getUserId(){
+        return userId;
+    }
+    public String getItemId(){
+        return itemId;
+    }
 
+    public String getName(){
+        return itemName;
+    }
     public void setStatus(OrderStatus status){
         this.status = status;
     }

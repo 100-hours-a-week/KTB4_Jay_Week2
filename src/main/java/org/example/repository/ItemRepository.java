@@ -34,7 +34,8 @@ public class ItemRepository {
                         new Item(
                                 data[0],
                                 data[1],
-                                Integer.parseInt(data[2])
+                                Integer.parseInt(data[2]),
+                                Integer.parseInt(data[3])
                         );
 
                 items.add(item);

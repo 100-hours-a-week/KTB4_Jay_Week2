@@ -56,4 +56,8 @@ public class UserController {
         // 성공한 user 반환
         return user;
     }
+
+    public void charge(User user, int amount){
+        userService.charge(user, amount);
+    }
 }

@@ -7,9 +7,11 @@ import org.example.domain.item.Item;
 import org.example.domain.order.Order;
 import org.example.domain.user.User;
 import org.example.repository.ItemRepository;
+import org.example.repository.OrderMemoryRepository;
 import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
 import org.example.task.DeliveryTask;
+import org.example.task.OrderTask;
 
 import java.util.List;
 
@@ -21,13 +23,17 @@ public class OrderService {
 
     private OrderRepository orderRepository;
 
+    private OrderMemoryRepository orderMemoryRepository;
+
     public OrderService(UserRepository userRepository,
                         ItemRepository itemRepository,
-                        OrderRepository orderRepository) {
+                        OrderRepository orderRepository,
+                        OrderMemoryRepository orderMemoryRepository) {
 
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.orderRepository = orderRepository;
+        this.orderMemoryRepository = orderMemoryRepository;
     }
 
     // 주문
@@ -65,6 +71,7 @@ public class OrderService {
         if (user.getBalance() < finalPrice) {
             return "잔액 부족";
         }
+        item.decreaseStock();
 
         // 유저 상태 변경
         user.deductBalance(finalPrice);
@@ -86,6 +93,7 @@ public class OrderService {
 
         // 주문 저장
         orderRepository.save(order);
+        orderMemoryRepository.add(order);
 
         Runnable task = new DeliveryTask(order);
         Thread thread = new Thread(task);
@@ -93,6 +101,9 @@ public class OrderService {
         return "주문 완료 / 결제 금액 : " + finalPrice + " 남은 금액: " + user.getBalance();
 
 
+    }
+    public List<Order> getorders(){
+        return orderMemoryRepository.findAllStatus();
     }
 
     // 상품 찾기
@@ -110,5 +121,45 @@ public class OrderService {
         }
 
         return null;
+    }
+
+    public String testOrder ( User user, Item item){
+        try {
+            item.decreaseStock();
+
+            return user.getId() + ": 주문 성공!!";
+        } catch (Exception e) {
+            return user.getId() + ": 주문 실패: " + e.getMessage();
+        }
+    }
+
+    public void testStockRace(){
+        Item item = new Item(
+                "1", "치킨",18000, 3
+        );
+        User user1 = new User(
+                    "user1", "1234", 100000
+        );
+        User user2 = new User(
+                "user2", "1234", 100000
+        );
+
+        OrderTask task1 = new OrderTask(this, user1, item);
+        OrderTask task2 = new OrderTask(this, user2, item);
+
+        Thread t1 = new Thread(task1);
+        Thread t2 = new Thread(task2);
+
+        t1.start();
+        t2.start();
+
+        try{
+            t1.join();
+            t2.join();
+        }catch (InterruptedException e){
+            e.printStackTrace();
+        }
+
+        System.out.println("최종 재고: " + item.getStock());
     }
 }

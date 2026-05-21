@@ -64,6 +64,12 @@ public class User {
         // 잔액 차감
         this.balance -= price;
     }
+    public void chargeBalance(int amount){
+        if (amount <= 0){
+            throw new RuntimeException("잘못된 금액입니다.");
+        }
+        this.balance += amount;
+    }
 
     // 주문횟수 증가
     public void increaseOrderCount() {

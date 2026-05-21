@@ -5,14 +5,17 @@ public class Item {
     private String id;
     private String name;
     private int price;
+    private int stock;
 
     public Item(String id,
                 String name,
-                int price) {
+                int price,
+                int stock) {
 
         this.id = id;
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
 
     public String getId() {
@@ -25,5 +28,25 @@ public class Item {
 
     public int getPrice() {
         return price;
+    }
+
+    public int getStock(){
+        return stock;
+    }
+
+    public synchronized void decreaseStock(){
+        if (stock <= 0){
+            throw new RuntimeException("재고 부족!!");
+        }
+        System.out.println(Thread.currentThread().getName() + " 재고 확인 완료!!");
+
+        try{
+            Thread.sleep(1000);
+        }catch (Exception e){
+            e.getStackTrace();
+        }
+        stock --;
+
+        System.out.println(Thread.currentThread().getName() + " 감소 후 재고 : " + stock);
     }
 }

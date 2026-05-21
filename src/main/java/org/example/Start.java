@@ -3,6 +3,7 @@ package org.example;
 import org.example.controller.OrderController;
 import org.example.controller.UserController;
 import org.example.repository.ItemRepository;
+import org.example.repository.OrderMemoryRepository;
 import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
 import org.example.service.ItemService;
@@ -16,27 +17,23 @@ public class Start {
     public static void main(String[] args) {
 
         // repository 생성
-        UserRepository userRepository =
-                new UserRepository();
+        UserRepository userRepository = new UserRepository();
 
-        ItemRepository itemRepository =
-                new ItemRepository();
+        ItemRepository itemRepository = new ItemRepository();
 
-        OrderRepository orderRepository =
-                new OrderRepository();
+        OrderRepository orderRepository = new OrderRepository();
+        OrderMemoryRepository orderMemoryRepository = new OrderMemoryRepository();
 
         // service 생성
-        UserService userService =
-                new UserService(userRepository);
+        UserService userService = new UserService(userRepository);
 
-        ItemService itemService =
-                new ItemService(itemRepository);
+        ItemService itemService = new ItemService(itemRepository);
 
-        OrderService orderService =
-                new OrderService(
+        OrderService orderService = new OrderService(
                         userRepository,
                         itemRepository,
-                        orderRepository
+                        orderRepository,
+                        orderMemoryRepository
                 );
 
         // controller 생성
@@ -51,7 +48,9 @@ public class Start {
 
         // view 생성
         OrderView orderView =
-                new OrderView(orderController);
+                new OrderView(
+                        orderController,
+                        userController);
 
         UserView userView =
                 new UserView(

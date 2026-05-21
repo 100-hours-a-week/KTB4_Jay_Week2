@@ -1,8 +1,12 @@
 package org.example.view;
 
 import org.example.controller.OrderController;
+import org.example.controller.UserController;
+import org.example.domain.order.Order;
+import org.example.domain.order.OrderStatus;
 import org.example.domain.user.User;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class OrderView {
@@ -11,10 +15,13 @@ public class OrderView {
             new Scanner(System.in);
 
     private OrderController orderController;
+    private UserController userController;
 
-    public OrderView(OrderController orderController){
+    public OrderView(OrderController orderController,
+                     UserController userController){
 
         this.orderController = orderController;
+        this.userController = userController;
     }
 
     public void start(User user){
@@ -24,7 +31,11 @@ public class OrderView {
             System.out.println("===== 주문 화면 =====");
             System.out.println("1. 정보 확인");
             System.out.println("2. 주문");
-            System.out.println("3. 로그아웃");
+            System.out.println("3. 현재 배달 정보 확인");
+            System.out.println("4. 금액 충전");
+            System.out.println("5. 재고 충돌 테스트");
+            System.out.println("6. 로그아웃");
+
 
             int choice =
                     sc.nextInt();
@@ -59,6 +70,29 @@ public class OrderView {
 
             // 로그아웃
             else if (choice == 3){
+                System.out.println("현재 음식들 배달 상태는 다음과 같습니다. ");
+                List<Order> orders = orderController.getorders();
+                boolean found = false;
+                for (Order order: orders) {
+                    if (order.getStatus() != OrderStatus.COMPLETED) {
+                        found = true;
+                        System.out.println(order.getUserId() + "님이 시키신 " + order.getName() + "의 배달상태: " + order.getStatus());
+                    }
+                }
+                if (!found){
+                    System.out.println("현재 배달 중인 음식이 없습니다.");
+                }
+            }
+            else if (choice == 4){
+                System.out.println("충전할 금액 입력: ");
+                int amount = sc.nextInt();
+                userController.charge(user, amount);
+                System.out.println("충전 후 잔액: " + user.getBalance());
+            }
+            else if (choice == 5){
+                orderController.testStockRace();
+            }
+            else if (choice == 6){
 
                 System.out.println("로그아웃");
 
