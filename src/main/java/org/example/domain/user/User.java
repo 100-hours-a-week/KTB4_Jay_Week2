@@ -2,8 +2,8 @@ package org.example.domain.user;
 
 public class User {
 
-    private String id;
-    private String password;
+    private final String id;
+    private final String password;
 
     // 주문 횟수
     private int orderCount;

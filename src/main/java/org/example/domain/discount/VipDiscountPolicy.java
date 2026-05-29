@@ -7,6 +7,6 @@ public class VipDiscountPolicy
     public int discount(int price) {
 
         // VIP 10% 할인
-        return (int)(price * 0.1);
+        return price/10;
     }
 }

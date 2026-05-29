@@ -3,14 +3,11 @@ package org.example.controller;
 import org.example.domain.user.User;
 import org.example.service.UserService;
 
-import java.util.Scanner;
-
 public class UserController {
 
     private UserService userService;
 
-    private Scanner sc =
-            new Scanner(System.in);
+
 
     public UserController(UserService userService){
 
@@ -18,13 +15,9 @@ public class UserController {
     }
 
     // 회원가입
-    public void register(){
+    public void register(String id, String pw){
 
-        System.out.print("아이디 입력: ");
-        String id = sc.nextLine();
 
-        System.out.print("비밀번호 입력: ");
-        String pw = sc.nextLine();
 
         // 서비스한테 회원가입 요청
         boolean result =
@@ -36,16 +29,9 @@ public class UserController {
     }
 
     // 로그인
-    public User login(){
+    public User login(String id, String pw){
 
-        System.out.print("아이디 입력: ");
-        String id = sc.nextLine();
-
-        System.out.print("비밀번호 입력: ");
-        String pw = sc.nextLine();
-
-        User user =
-                userService.login(id, pw);
+        User user = userService.login(id, pw);
 
         // 로그인 실패
         if (user == null){

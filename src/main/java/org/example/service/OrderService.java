@@ -2,6 +2,7 @@ package org.example.service;
 
 import org.example.domain.discount.BasicDiscountPolicy;
 import org.example.domain.discount.DiscountPolicy;
+import org.example.domain.discount.DiscountPolicyFactory;
 import org.example.domain.discount.VipDiscountPolicy;
 import org.example.domain.item.Item;
 import org.example.domain.order.Order;
@@ -12,6 +13,8 @@ import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
 import org.example.task.DeliveryTask;
 import org.example.task.OrderTask;
+import org.example.service.result.OrderError;
+import org.example.service.result.OrderResult;
 
 import java.util.List;
 
@@ -37,41 +40,37 @@ public class OrderService {
     }
 
     // 주문
-    public String order(User user,
+    public OrderResult order(User user,
                         String itemId) {
         System.out.println("주문 thread: " + Thread.currentThread().getName());
         Item item = findItem(itemId);
 
         // 상품 없으면 실패
         if (item == null) {
-            return "상품이 존재하지 않습니다.";
+            return OrderResult.fail(OrderError.ITEM_NOT_FOUND);
         }
 
         int price = item.getPrice();
 
         // 할인정책 선택
-        DiscountPolicy policy;
+        DiscountPolicyFactory discountPolicyFactory = new DiscountPolicyFactory();
 
-        if (user.getGrade().name().equals("VIP")) {
+        DiscountPolicy policy = discountPolicyFactory.getPolicy(user.getGrade());
 
-            policy = new VipDiscountPolicy();
+        int discount = policy.discount(price);
 
-        } else {
-
-            policy = new BasicDiscountPolicy();
-        }
-
-        int discount =
-                policy.discount(price);
-
-        int finalPrice =
-                price - discount;
+        int finalPrice = price - discount;
 
         // 돈 부족
         if (user.getBalance() < finalPrice) {
-            return "잔액 부족";
+            return OrderResult.fail(OrderError.INSUFFICIENT_BALANCE);
+
         }
-        item.decreaseStock();
+        try {
+            item.decreaseStock();
+        } catch (RuntimeException e) {
+            return OrderResult.fail(OrderError.OUT_OF_STOCK);
+        }
 
         // 유저 상태 변경
         user.deductBalance(finalPrice);
@@ -98,7 +97,7 @@ public class OrderService {
         Runnable task = new DeliveryTask(order);
         Thread thread = new Thread(task);
         thread.start();
-        return "주문 완료 / 결제 금액 : " + finalPrice + " 남은 금액: " + user.getBalance();
+        return OrderResult.success(finalPrice, user.getBalance());
 
 
     }

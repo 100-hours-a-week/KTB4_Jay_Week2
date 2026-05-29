@@ -2,9 +2,12 @@ package org.example.view;
 
 import org.example.controller.OrderController;
 import org.example.controller.UserController;
+import org.example.domain.item.Item;
 import org.example.domain.order.Order;
 import org.example.domain.order.OrderStatus;
 import org.example.domain.user.User;
+import org.example.service.result.OrderError;
+import org.example.service.result.OrderResult;
 
 import java.util.List;
 import java.util.Scanner;
@@ -23,6 +26,32 @@ public class OrderView {
         this.orderController = orderController;
         this.userController = userController;
     }
+    private int readInt() {
+        while (true) {
+            String input = sc.nextLine();
+
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("숫자를 입력해주세요.");
+            }
+        }
+    }
+    private String getOrderErrorMessage(OrderError error) {
+        if (error == OrderError.ITEM_NOT_FOUND) {
+            return "상품이 존재하지 않습니다.";
+        }
+
+        if (error == OrderError.INSUFFICIENT_BALANCE) {
+            return "잔액 부족";
+        }
+
+        if (error == OrderError.OUT_OF_STOCK) {
+            return "재고 부족";
+        }
+
+        return "주문 실패";
+    }
 
     public void start(User user){
 
@@ -37,10 +66,8 @@ public class OrderView {
             System.out.println("6. 로그아웃");
 
 
-            int choice =
-                    sc.nextInt();
+            int choice = readInt();
 
-            sc.nextLine();
 
             if (choice == 1){
                 System.out.println("===== 내 정보 =====");
@@ -54,7 +81,12 @@ public class OrderView {
             if (choice == 2){
 
                 // 상품 목록 출력
-                orderController.showItems();
+                List<Item> items = orderController.showItems();
+
+                System.out.println("===== 상품 목록 =====");
+                for (Item item : items) {
+                    System.out.println(item.getId() + " / " + item.getName() + " / " + item.getPrice());
+                }
 
                 System.out.print("상품 ID 입력: ");
 
@@ -62,10 +94,8 @@ public class OrderView {
                         sc.nextLine();
 
                 // 주문 요청
-                String result =
-                        orderController.order(user, itemId);
-
-                System.out.println(result);
+                OrderResult result = orderController.order(user, itemId);
+                System.out.println(getOrderErrorMessage(result.getError()));
             }
 
             // 로그아웃

@@ -14,6 +14,17 @@ public class UserView {
         this.userController = userController;
         this.orderView = orderView;
     }
+    private int readInt() {
+        while (true) {
+            String input = sc.nextLine();
+
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("숫자를 입력해주세요.");
+            }
+        }
+    }
     public void start() {
 
         while (true) {
@@ -23,15 +34,23 @@ public class UserView {
             System.out.println("2. 로그인");
             System.out.println("3. 종료");
 
-            int choice = sc.nextInt();
-            sc.nextLine();
-
+            int choice = readInt();
             // 회원가입 시 유저 컨트롤러의 register 함수를 실행시킨다.
             if (choice == 1) {
-                userController.register();
+                System.out.print("아이디 입력: ");
+                String id = sc.nextLine();
+
+                System.out.print("비밀번호 입력: ");
+                String pw = sc.nextLine();
+                userController.register(id, pw);
             }
             else if (choice == 2){
-                User user = userController.login();
+                System.out.print("아이디 입력: ");
+                String id = sc.nextLine();
+
+                System.out.print("비밀번호 입력: ");
+                String pw = sc.nextLine();
+                User user = userController.login(id, pw);
 
                 if (user != null){
 

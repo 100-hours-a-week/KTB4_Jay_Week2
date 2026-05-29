@@ -2,9 +2,9 @@ package org.example.domain.item;
 
 public class Item {
 
-    private String id;
-    private String name;
-    private int price;
+    private final String id;
+    private final String name;
+    private final int price;
     private int stock;
 
     public Item(String id,

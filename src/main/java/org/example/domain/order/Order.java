@@ -7,16 +7,16 @@ import java.util.UUID;
 
 public class Order {
 
-    private String orderId;
+    private final String orderId;
 
-    private String userId;
-    private String itemId;
+    private final String userId;
+    private final String itemId;
 
-    private int price;
-    private int discountPrice;
-    private int finalPrice;
+    private final int price;
+    private final int discountPrice;
+    private final int finalPrice;
     private OrderStatus status;
-    private String itemName;
+    private final String itemName;
 
     public Order(User user,
                  Item item,
