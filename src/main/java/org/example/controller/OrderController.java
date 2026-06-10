@@ -43,4 +43,8 @@ public class OrderController {
     public void testStockRace(){
         orderService.testStockRace();
     }
+
+    public void waitForDeliveries() {
+        orderService.waitForDeliveries();
+    }
 }

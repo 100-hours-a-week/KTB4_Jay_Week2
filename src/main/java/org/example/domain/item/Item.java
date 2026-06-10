@@ -42,8 +42,9 @@ public class Item {
 
         try{
             Thread.sleep(1000);
-        }catch (Exception e){
-            e.getStackTrace();
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("재고 감소 중 인터럽트가 발생했습니다.", e);
         }
         stock --;
 

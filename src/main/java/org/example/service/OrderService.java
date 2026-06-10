@@ -1,9 +1,7 @@
 package org.example.service;
 
-import org.example.domain.discount.BasicDiscountPolicy;
 import org.example.domain.discount.DiscountPolicy;
 import org.example.domain.discount.DiscountPolicyFactory;
-import org.example.domain.discount.VipDiscountPolicy;
 import org.example.domain.item.Item;
 import org.example.domain.order.Order;
 import org.example.domain.user.User;
@@ -11,7 +9,6 @@ import org.example.repository.ItemRepository;
 import org.example.repository.OrderMemoryRepository;
 import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
-import org.example.task.DeliveryTask;
 import org.example.task.OrderTask;
 import org.example.service.result.OrderError;
 import org.example.service.result.OrderResult;
@@ -28,15 +25,23 @@ public class OrderService {
 
     private OrderMemoryRepository orderMemoryRepository;
 
+    private DiscountPolicyFactory discountPolicyFactory;
+
+    private DeliveryService deliveryService;
+
     public OrderService(UserRepository userRepository,
                         ItemRepository itemRepository,
                         OrderRepository orderRepository,
-                        OrderMemoryRepository orderMemoryRepository) {
+                        OrderMemoryRepository orderMemoryRepository,
+                        DiscountPolicyFactory discountPolicyFactory,
+                        DeliveryService deliveryService) {
 
         this.userRepository = userRepository;
         this.itemRepository = itemRepository;
         this.orderRepository = orderRepository;
         this.orderMemoryRepository = orderMemoryRepository;
+        this.discountPolicyFactory = discountPolicyFactory;
+        this.deliveryService = deliveryService;
     }
 
     // 주문
@@ -51,9 +56,6 @@ public class OrderService {
         }
 
         int price = item.getPrice();
-
-        // 할인정책 선택
-        DiscountPolicyFactory discountPolicyFactory = new DiscountPolicyFactory();
 
         DiscountPolicy policy = discountPolicyFactory.getPolicy(user.getGrade());
 
@@ -94,15 +96,17 @@ public class OrderService {
         orderRepository.save(order);
         orderMemoryRepository.add(order);
 
-        Runnable task = new DeliveryTask(order);
-        Thread thread = new Thread(task);
-        thread.start();
+        deliveryService.startDelivery(order);
         return OrderResult.success(finalPrice, user.getBalance());
 
 
     }
     public List<Order> getorders(){
         return orderMemoryRepository.findAllStatus();
+    }
+
+    public void waitForDeliveries() {
+        deliveryService.waitForDeliveries();
     }
 
     // 상품 찾기
@@ -156,7 +160,8 @@ public class OrderService {
             t1.join();
             t2.join();
         }catch (InterruptedException e){
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            return;
         }
 
         System.out.println("최종 재고: " + item.getStock());

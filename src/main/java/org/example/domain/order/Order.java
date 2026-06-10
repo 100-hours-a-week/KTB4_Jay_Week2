@@ -15,7 +15,7 @@ public class Order {
     private final int price;
     private final int discountPrice;
     private final int finalPrice;
-    private OrderStatus status;
+    private volatile OrderStatus status;
     private final String itemName;
 
     public Order(User user,

@@ -2,39 +2,35 @@ package org.example.task;
 
 import org.example.domain.order.Order;
 import org.example.domain.order.OrderStatus;
+import org.example.view.DeliveryView;
 
-public class DeliveryTask implements  Runnable{
+public class DeliveryTask implements Runnable {
 
-    private Order order;
+    private final Order order;
+    private final DeliveryView deliveryView;
 
-    public DeliveryTask(Order order){
+    public DeliveryTask(Order order, DeliveryView deliveryView) {
         this.order = order;
+        this.deliveryView = deliveryView;
     }
 
     @Override
     public void run() {
         try {
             Thread.sleep(3000);
-
             order.setStatus(OrderStatus.PREPARING);
-
-            System.out.println(Thread.currentThread().getName() + ": 상품을 준비 중입니다!");
+            deliveryView.showStatusChanged(OrderStatus.PREPARING);
 
             Thread.sleep(3000);
-
             order.setStatus(OrderStatus.DELIVERING);
-
-            System.out.println(Thread.currentThread().getName() + ": 상품을 배달 중입니다!");
+            deliveryView.showStatusChanged(OrderStatus.DELIVERING);
 
             Thread.sleep(3000);
-
             order.setStatus(OrderStatus.COMPLETED);
-
-            System.out.println(Thread.currentThread().getName() + ": 상품 배달이 완료되었습니다!");
-
+            deliveryView.showStatusChanged(OrderStatus.COMPLETED);
 
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
     }
 }

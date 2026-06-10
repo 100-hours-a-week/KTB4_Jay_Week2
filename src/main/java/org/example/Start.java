@@ -2,13 +2,16 @@ package org.example;
 
 import org.example.controller.OrderController;
 import org.example.controller.UserController;
+import org.example.domain.discount.DiscountPolicyFactory;
 import org.example.repository.ItemRepository;
 import org.example.repository.OrderMemoryRepository;
 import org.example.repository.OrderRepository;
 import org.example.repository.UserRepository;
+import org.example.service.DeliveryService;
 import org.example.service.ItemService;
 import org.example.service.OrderService;
 import org.example.service.UserService;
+import org.example.view.DeliveryView;
 import org.example.view.OrderView;
 import org.example.view.UserView;
 
@@ -29,11 +32,15 @@ public class Start {
 
         ItemService itemService = new ItemService(itemRepository);
 
+        DeliveryService deliveryService = new DeliveryService(new DeliveryView());
+
         OrderService orderService = new OrderService(
                         userRepository,
                         itemRepository,
                         orderRepository,
-                        orderMemoryRepository
+                        orderMemoryRepository,
+                        new DiscountPolicyFactory(),
+                        deliveryService
                 );
 
         // controller 생성
@@ -60,5 +67,6 @@ public class Start {
 
         // 시작
         userView.start();
+        orderController.waitForDeliveries();
     }
 }

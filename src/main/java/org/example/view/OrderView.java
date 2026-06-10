@@ -17,6 +17,8 @@ public class OrderView {
     private Scanner sc =
             new Scanner(System.in);
 
+    private InputReader inputReader = new InputReader(sc);
+
     private OrderController orderController;
     private UserController userController;
 
@@ -25,17 +27,6 @@ public class OrderView {
 
         this.orderController = orderController;
         this.userController = userController;
-    }
-    private int readInt() {
-        while (true) {
-            String input = sc.nextLine();
-
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("숫자를 입력해주세요.");
-            }
-        }
     }
     private String getOrderErrorMessage(OrderError error) {
         if (error == OrderError.ITEM_NOT_FOUND) {
@@ -66,7 +57,7 @@ public class OrderView {
             System.out.println("6. 로그아웃");
 
 
-            int choice = readInt();
+            int choice = inputReader.readMenuChoice(1, 6);
 
 
             if (choice == 1){
@@ -115,7 +106,7 @@ public class OrderView {
             }
             else if (choice == 4){
                 System.out.println("충전할 금액 입력: ");
-                int amount = sc.nextInt();
+                int amount = inputReader.readPositiveInt();
                 userController.charge(user, amount);
                 System.out.println("충전 후 잔액: " + user.getBalance());
             }

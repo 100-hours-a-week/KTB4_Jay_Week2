@@ -7,23 +7,13 @@ import java.util.Scanner;
 
 public class UserView {
     private Scanner sc = new Scanner(System.in);
+    private InputReader inputReader = new InputReader(sc);
     private UserController userController;
     private OrderView orderView;
 
     public UserView(UserController userController, OrderView orderView){
         this.userController = userController;
         this.orderView = orderView;
-    }
-    private int readInt() {
-        while (true) {
-            String input = sc.nextLine();
-
-            try {
-                return Integer.parseInt(input);
-            } catch (NumberFormatException e) {
-                System.out.println("숫자를 입력해주세요.");
-            }
-        }
     }
     public void start() {
 
@@ -34,7 +24,7 @@ public class UserView {
             System.out.println("2. 로그인");
             System.out.println("3. 종료");
 
-            int choice = readInt();
+            int choice = inputReader.readMenuChoice(1, 3);
             // 회원가입 시 유저 컨트롤러의 register 함수를 실행시킨다.
             if (choice == 1) {
                 System.out.print("아이디 입력: ");
